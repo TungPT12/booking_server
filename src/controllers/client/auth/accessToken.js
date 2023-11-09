@@ -14,12 +14,10 @@ exports.isAccessToken = async (req, res) => {
         let user = await User.findOne({ _id: userId }).select('_id username fullName phoneNumber avatar email isAdmin')
 
         if (user) {
-            if (user.isAdmin) {
-                return res.send(JSON.stringify({
-                    ...user._doc,
-                    success: true,
-                }));
-            }
+            return res.send(JSON.stringify({
+                ...user._doc,
+                success: true,
+            }));
         }
         return res.status(403).send(JSON.stringify({
             success: false
