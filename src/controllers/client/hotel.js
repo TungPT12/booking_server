@@ -1,4 +1,6 @@
 const Hotel = require('../../models/Hotel');
+const Transaction = require('../../models/Transaction');
+const { searchByArea, searchRoomByDate } = require('../../utils/searchHotels');
 
 exports.getTopThreeRatingHotel = async (req, res) => {
     try {
@@ -45,6 +47,58 @@ exports.getHotelById = async (req, res) => {
         }))
     }
 }
+
+exports.searchHotels = async (req, res) => {
+    try {
+        const { area, startDate, endDate, minPrice, maxPrice, people } = req.query;
+        const hotels = await Hotel.find().populate({ path: 'area' }).populate('type').populate('rooms');
+
+        const hotelsHaveRoom = hotels.filter((hotel) => {
+            return hotel.rooms.length > 0;
+        })
+
+        if (hotelsHaveRoom.length <= 0) {
+            return res.json([])
+        }
+
+        const resultList = searchByArea(area, hotelsHaveRoom);
+        if (resultList.length <= 0) {
+            return res.json([])
+        }
+
+        // lấy list id hotel
+        const listHotelId = resultList.map((hotel) => {
+            return hotel._id;
+        })
+
+        // lấy các transaction có hotel id
+        const transactions = await Transaction.find({
+            $or: [
+                {
+                    hotelId: listHotelId,
+                    status: "booked"
+                },
+                {
+                    hotelId: listHotelId,
+                    status: 'checkin'
+                }
+            ]
+        })
+
+        if (transactions.length <= 0) {
+            return res.json([])
+        }
+        const filterHotelHaveValidRoom = searchRoomByDate(resultList, transactions, startDate, endDate);
+        return res.json(filterHotelHaveValidRoom);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(JSON.stringify({
+            message: "Server Error",
+            success: false
+        }))
+    }
+}
+
 
 
 
