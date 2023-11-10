@@ -41,37 +41,35 @@ exports.searchByArea = (area, hotels) => {
 
 
 exports.searchRoomByDate = (hotels, transactions, startDate, endDate) => {
+    console.log(startDate)
+    console.log(endDate)
     startDate = new Date(startDate)
     endDate = new Date(endDate)
     if (hotels.length <= 0) {
         return [];
     }
-
     let newResultHotels = [];
 
     // lăp qua từng khách sạn
     for (let hotelPosition = 0; hotelPosition < hotels.length; hotelPosition++) {
         let hotel = hotels[hotelPosition];
-
         // lây các transaction của Hotel
         const transactionOfHotel = transactions.filter((transaction) => {
             return transaction.hotelId.toString() === hotel._id.toString();
         })
         if (transactionOfHotel.length > 0) {
             // lấy transaction trong khoảng startDate  và endAte
-            const transactionsHaveRoomInValid = transactions.filter((transaction) => {
+            const transactionsHaveRoomInValid = transactionOfHotel.filter((transaction) => {
                 return startDate >= transaction.dateStart && startDate <= transaction.dateEnd
                     || endDate >= transaction.dateStart && endDate <= transaction.dateEnd
                     || transaction.dateStart >= endDate && transaction.dateEnd <= startDate
                     || transaction.dateEnd >= startDate && transaction.dateEnd <= endDate
             })
-            // console.log(transactionsHaveRoomInValid)
             if (transactionsHaveRoomInValid.length > 0) {
                 // lấy các số phòng đã được đặt
-                const roomNumbersInTransaction = transactionsHaveRoomInValid.reduce((initArray, transaction) => {
+                let roomNumbersInTransaction = transactionsHaveRoomInValid.reduce((initArray, transaction) => {
                     return initArray = [...initArray, ...transaction.rooms]
                 }, [])
-
                 // cắt các phòng đã trong khách sạn
                 // laays cac loại phòng
                 let rooms = hotel.rooms;
@@ -93,7 +91,6 @@ exports.searchRoomByDate = (hotels, transactions, startDate, endDate) => {
                     const filterRoomHaveRoomNumber = roomFiltered.filter((room) => {
                         return room.roomNumbers.length !== 0
                     })
-                    console.log("fsdf")
                     hotel = {
                         ...hotel._doc,
                         rooms: filterRoomHaveRoomNumber
