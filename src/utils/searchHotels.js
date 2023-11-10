@@ -41,8 +41,6 @@ exports.searchByArea = (area, hotels) => {
 
 
 exports.searchRoomByDate = (hotels, transactions, startDate, endDate) => {
-    console.log(startDate)
-    console.log(endDate)
     startDate = new Date(startDate)
     endDate = new Date(endDate)
     if (hotels.length <= 0) {
@@ -110,4 +108,24 @@ exports.searchRoomByDate = (hotels, transactions, startDate, endDate) => {
         return hotel.rooms.length !== 0
     })
     return hotelHaveRoom;
+}
+
+exports.searchByPeople = (people, hotels) => {
+    people = parseInt(people)
+    if (people) {
+        let resultHotels = []
+        for (let index = 0; index < hotels.length; index++) {
+            const hotel = hotels[index];
+            const rooms = hotels[index].rooms;
+            const roomAvailable = rooms.find((room) => {
+                return people <= room.maxPeople;
+            })
+            if (roomAvailable) {
+                resultHotels.push(hotel)
+            }
+        }
+        // console.log()
+        return resultHotels
+    }
+    return hotels
 }

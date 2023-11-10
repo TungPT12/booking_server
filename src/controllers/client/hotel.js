@@ -1,6 +1,6 @@
 const Hotel = require('../../models/Hotel');
 const Transaction = require('../../models/Transaction');
-const { searchByArea, searchRoomByDate } = require('../../utils/searchHotels');
+const { searchByArea, searchRoomByDate, searchByPeople } = require('../../utils/searchHotels');
 
 exports.getTopThreeRatingHotel = async (req, res) => {
     try {
@@ -89,7 +89,10 @@ exports.searchHotels = async (req, res) => {
             return res.json([])
         }
         const filterHotelHaveValidRoom = searchRoomByDate(resultList, transactions, startDate, endDate);
-        return res.json(filterHotelHaveValidRoom);
+
+        const filterByMaxPeople = searchByPeople(people, filterHotelHaveValidRoom);
+
+        return res.json(filterByMaxPeople);
     } catch (error) {
         console.log(error);
         return res.status(500).send(JSON.stringify({
