@@ -1,5 +1,6 @@
 const Hotel = require('../../models/Hotel');
 const Room = require('../../models/Room');
+const Transaction = require('../../models/Transaction');
 
 const paging = require('../../utils/paging')
 
@@ -254,6 +255,69 @@ exports.updateHotelById = async (req, res) => {
             message: "Cannot update hotel!",
             success: false
         }));
+
+    } catch (error) {
+        if (error.message.includes("Cast to ObjectId failed")) {
+            return res.status(404).send(JSON.stringify({
+                message: "Not Found Area",
+                success: false
+            }))
+        }
+        console.log(error.message);
+        return res.status(500).send(JSON.stringify({
+            message: "Server Error",
+            success: false
+        }))
+    }
+}
+
+exports.deleteHotelById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!id) {
+            return res.status(400).send(JSON.stringify({
+                message: "Not found id params!",
+                success: false
+            }));
+        }
+
+        const transactions = await Transaction.find({
+            hotelId: id
+        })
+
+        console.log(transactions)
+
+        if (transactions.length > 0) {
+            return res.status(400).send(JSON.stringify({
+                message: "This hotel have transactions cannot delete!",
+                success: false
+            }));
+        }
+
+        const deletedRooms = await Room.deleteMany({
+            hotelID: id
+        })
+
+        if (!deletedRooms) {
+            return res.status(400).send(JSON.stringify({
+                message: "Something went wrong!",
+                success: false
+            }));
+        }
+
+        const deletedHotel = await Hotel.deleteOne({
+            _id: id
+        });
+
+        if (deletedHotel.deletedCount <= 0) {
+            return res.status(400).send(JSON.stringify({
+                message: "Something went wrong when delete hotels!",
+                success: false
+            }));
+        }
+
+        return res.sendStatus(200)
 
     } catch (error) {
         if (error.message.includes("Cast to ObjectId failed")) {
