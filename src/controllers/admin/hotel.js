@@ -164,3 +164,57 @@ exports.disableHotel = async (req, res) => {
         }))
     }
 }
+
+exports.updateHotelById = async (req, res) => {
+    try {
+        const { id, name, type, area, address, distance, photos, desc, title, featured } = req.body;
+
+        if (!id) {
+            return res.status(400).send(JSON.stringify({
+                message: "Not found id params!",
+                success: false
+            }));
+        }
+        const hotel = await Hotel.findById(id);
+
+        if (!hotel) {
+            return res.status(404).send(JSON.stringify({
+                message: "Not found hotel",
+                success: false
+            }));
+        }
+
+        hotel.name = name;
+        hotel.type = type;
+        hotel.area = area;
+        hotel.address = address;
+        hotel.distance = distance;
+        hotel.photos = photos;
+        hotel.desc = desc;
+        hotel.title = title;
+        hotel.featured = featured;
+
+        const hotelUpdated = await hotel.save();
+        if (hotelUpdated) {
+            return res.json();
+        }
+
+        return res.status(400).send(JSON.stringify({
+            message: "Cannot update hotel!",
+            success: false
+        }));
+
+    } catch (error) {
+        if (error.message.includes("Cast to ObjectId failed")) {
+            return res.status(404).send(JSON.stringify({
+                message: "Not Found Area",
+                success: false
+            }))
+        }
+        console.log(error.message);
+        return res.status(500).send(JSON.stringify({
+            message: "Server Error",
+            success: false
+        }))
+    }
+}
