@@ -7,8 +7,7 @@ router.post('/hotel', verifyAdminToken, hotelController.createHotel);
 router.get('/hotels', verifyAdminToken, hotelController.getHotels);
 router.get('/hotels/enable', verifyAdminToken, hotelController.getEnableHotels);
 router.get('/hotel/:id', verifyAdminToken, hotelController.getHotelById);
-router.delete('/hotel/:id', verifyAdminToken, hotelController.disableHotel);
 router.put('/hotel', verifyAdminToken, hotelController.updateHotelById);
-
+router.delete('/hotel/:id', verifyAdminToken, hotelController.disableHotel);
 
 module.exports = router;

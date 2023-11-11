@@ -100,12 +100,17 @@ exports.getHotelById = async (req, res) => {
     try {
         const { id } = req.params;
         if (id) {
-            const hotel = await Hotel.findById(id).populate('area').populate({ path: 'rooms', select: '_id desc maxPeople price roomNumbers title' });
-            return res.send(JSON.stringify(hotel));
+            const hotel = await Hotel.findById(id)
+                .populate('type')
+                .populate('area').populate({ path: 'rooms', select: '_id desc maxPeople price roomNumbers title' });
+            if (hotel) {
+                return res.send(JSON.stringify(hotel));
+            }
         }
-        return res.send(JSON.stringify({
-            message: "dsada",
-        }));
+        return res.status(400).send(JSON.stringify({
+            message: "Cannot delete hotel",
+            success: false
+        }))
     } catch (error) {
         console.log(error);
         return res.status(500).send(JSON.stringify({
