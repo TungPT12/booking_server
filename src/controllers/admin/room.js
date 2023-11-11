@@ -14,7 +14,6 @@ exports.createRoom = async (req, res) => {
             desc: desc,
             roomNumbers: roomNumbers,
             hotelID: hotelID,
-            isDisable: false,
         });
         const hotel = await Hotel.findById(hotelID);
         const result = await room.save();
@@ -38,40 +37,35 @@ exports.createRoom = async (req, res) => {
 
 exports.getRooms = async (req, res) => {
     try {
-        let { isDisable, page } = req.query
+        let { page } = req.query
         if (page) {
             page = parseInt(page)
         }
-        let rooms = [];
-        if (isDisable) {
-            if (isDisable === 'true') {
-                isDisable = true;
-            } else {
-                isDisable = false;
+        const rooms = await Room.find()
+        if (page) {
+            if (rooms.length === 0) {
+                return res.send(JSON.stringify({
+                    page: 0,
+                    results: [],
+                    pageSize: 0,
+                }))
             }
-            rooms = await Room.find({ isDisable: isDisable })
-        } else {
-            rooms = await Room.find()
-        }
-        if (rooms.length === 0) {
+            const total_pages = Math.ceil(rooms.length / resultPerPage);
+            if (page > total_pages) {
+                return res.send(JSON.stringify({
+                    errors: `page must be less than or equal to ${total_pages}`,
+                    success: false
+                }));
+            }
+            const results = paging(rooms, resultPerPage, page)
             return res.send(JSON.stringify({
-                page: 0,
-                results: [],
-                pageSize: 0,
+                page: page ? page : 1,
+                results: results,
+                total_pages: total_pages
             }))
         }
-        const total_pages = Math.ceil(rooms.length / resultPerPage);
-        if (page > total_pages) {
-            return res.send(JSON.stringify({
-                errors: `page must be less than or equal to ${total_pages}`,
-                success: false
-            }));
-        }
-        const results = paging(rooms, resultPerPage, page)
         return res.send(JSON.stringify({
-            page: page ? page : 1,
-            results: results,
-            total_pages: total_pages
+            results: rooms,
         }))
     } catch (error) {
         console.log(error);

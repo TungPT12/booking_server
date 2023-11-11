@@ -38,41 +38,36 @@ exports.createHotel = async (req, res) => {
 
 exports.getHotels = async (req, res) => {
     try {
-        let { isDisable, page } = req.query;
+        let { page } = req.query;
         if (page) {
             page = parseInt(page)
         }
-        let hotels = [];
-        if (isDisable) {
-            if (isDisable === 'true') {
-                isDisable = true;
-            } else {
-                isDisable = false;
+        const hotels = await Hotel.find().select('_id area name title type isDisable').populate({ path: 'type', select: '-_id name' }).populate({ path: 'area', select: '-_id name' })
+        if (page) {
+            if (hotels.length === 0) {
+                return res.send(JSON.stringify({
+                    page: 0,
+                    results: [],
+                    pageSize: 0,
+                }))
             }
-            hotels = await Hotel.find({ isDisable: isDisable }).select('_id type area name title isDisable').populate({ path: 'type', select: '-_id name' }).populate({ path: 'area', select: '-_id name' })
-        } else {
-            hotels = await Hotel.find().select('_id area name title type isDisable').populate({ path: 'type', select: '-_id name' }).populate({ path: 'area', select: '-_id name' })
-        }
-        if (hotels.length === 0) {
+            const total_pages = Math.ceil(hotels.length / resultPerPage);
+            if (page > total_pages) {
+                return res.send(JSON.stringify({
+                    errors: `page must be less than or equal to ${total_pages}`,
+                    success: false
+                }));
+            }
+            const results = paging(hotels, resultPerPage, page)
             return res.send(JSON.stringify({
-                page: 0,
-                results: [],
-                pageSize: 0,
+                page: page ? page : 1,
+                results: results,
+                total_pages: total_pages
             }))
         }
-        const total_pages = Math.ceil(hotels.length / resultPerPage);
-        if (page > total_pages) {
-            return res.send(JSON.stringify({
-                errors: `page must be less than or equal to ${total_pages}`,
-                success: false
-            }));
-        }
-        const results = paging(hotels, resultPerPage, page)
-        return res.send(JSON.stringify({
-            page: page ? page : 1,
-            results: results,
-            total_pages: total_pages
-        }))
+        return res.json({
+            results: hotels,
+        })
     } catch (error) {
         console.log(error);
         return res.status(500).send(JSON.stringify({
@@ -81,6 +76,61 @@ exports.getHotels = async (req, res) => {
         }))
     }
 }
+// exports.getHotels = async (req, res) => {
+//     try {
+//         let { isDisable, page } = req.query;
+//         if (page) {
+//             page = parseInt(page)
+//         }
+//         let hotels = [];
+//         if (isDisable) {
+//             if (isDisable === 'true') {
+//                 isDisable = true;
+//             } else {
+//                 isDisable = false;
+//             }
+//             hotels = await Hotel.find({ isDisable: isDisable }).select('_id type area name title isDisable').populate({ path: 'type', select: '-_id name' }).populate({ path: 'area', select: '-_id name' })
+//         } else {
+//             hotels = await Hotel.find().select('_id area name title type isDisable').populate({ path: 'type', select: '-_id name' }).populate({ path: 'area', select: '-_id name' })
+//         }
+//         // if (isDisable) {
+//         //     if (isDisable === 'true') {
+//         //         isDisable = true;
+//         //     } else {
+//         //         isDisable = false;
+//         //     }
+//         //     hotels = await Hotel.find({ isDisable: isDisable }).select('_id type area name title isDisable').populate({ path: 'type', select: '-_id name' }).populate({ path: 'area', select: '-_id name' })
+//         // } else {
+//         //     hotels = await Hotel.find().select('_id area name title type isDisable').populate({ path: 'type', select: '-_id name' }).populate({ path: 'area', select: '-_id name' })
+//         // }
+//         if (hotels.length === 0) {
+//             return res.send(JSON.stringify({
+//                 page: 0,
+//                 results: [],
+//                 pageSize: 0,
+//             }))
+//         }
+//         const total_pages = Math.ceil(hotels.length / resultPerPage);
+//         if (page > total_pages) {
+//             return res.send(JSON.stringify({
+//                 errors: `page must be less than or equal to ${total_pages}`,
+//                 success: false
+//             }));
+//         }
+//         const results = paging(hotels, resultPerPage, page)
+//         return res.send(JSON.stringify({
+//             page: page ? page : 1,
+//             results: results,
+//             total_pages: total_pages
+//         }))
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(500).send(JSON.stringify({
+//             message: "Server Error",
+//             success: false
+//         }))
+//     }
+// }
 
 exports.getEnableHotels = async (req, res) => {
     try {
@@ -128,10 +178,6 @@ exports.disableHotel = async (req, res) => {
             hotelID: id,
             isDisable: false
         })
-        // const isHaveRoom = await Room.findOne({
-        //     rooms: { $in: ["65439aa88f7f8677b775ed74"] },
-        //     isDisable: true
-        // })
 
         if (isHaveRoom) {
             return res.status(400).send(JSON.stringify({

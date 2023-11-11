@@ -27,10 +27,6 @@ const roomSchema = new Schema({
         required: true,
         ref: 'Hotel'
     },
-    isDisable: {
-        type: Boolean,
-        required: true,
-    },
 });
 
 module.exports = mongoose.model('Room', roomSchema);
