@@ -19,6 +19,7 @@ exports.getTopThreeRatingHotel = async (req, res) => {
     }
 }
 
+
 exports.getHotelById = async (req, res) => {
     try {
         const { id } = req.params;
