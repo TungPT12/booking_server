@@ -249,7 +249,7 @@ exports.updateHotelById = async (req, res) => {
         const hotelUpdated = await hotel.save();
         console.log(hotelUpdated)
         if (hotelUpdated) {
-            return res.json();
+            return res.json(hotelUpdated);
         }
 
         return res.status(400).send(JSON.stringify({

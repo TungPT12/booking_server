@@ -77,6 +77,35 @@ exports.getRooms = async (req, res) => {
     }
 }
 
+exports.getRoomById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(404).send(JSON.stringify({
+                message: "Not found id params!",
+                success: false
+            }));
+        };
+        const room = await Room.findById(id);
+
+        if (!room) {
+            return res.status(404).send(JSON.stringify({
+                message: "Not found room!",
+                success: false
+            }));
+        };
+
+        return res.json(room);
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(JSON.stringify({
+            message: "Server Error",
+            success: false
+        }));
+    }
+}
+
 exports.deleteRoomById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -152,6 +181,56 @@ exports.deleteRoomById = async (req, res) => {
         if (error.message.includes("Cast to ObjectId failed")) {
             return res.status(404).send(JSON.stringify({
                 message: "Not Found Room",
+                success: false
+            }))
+        }
+        console.log(error.message);
+        return res.status(500).send(JSON.stringify({
+            message: "Server Error",
+            success: false
+        }))
+    }
+}
+
+exports.updateRoomById = async (req, res) => {
+    try {
+        const { id, title, price, maxPeople, desc, roomNumbers } = req.body;
+
+        if (!id) {
+            return res.status(400).send(JSON.stringify({
+                message: "Not found id params!",
+                success: false
+            }));
+        }
+        const room = await Room.findById(id);
+
+        if (!room) {
+            return res.status(404).send(JSON.stringify({
+                message: "Not found room!",
+                success: false
+            }));
+        }
+
+        room.title = title;
+        room.price = price;
+        room.maxPeople = maxPeople;
+        room.desc = desc;
+        room.roomNumbers = roomNumbers;
+
+        const roomUpdated = await room.save();
+        if (roomUpdated) {
+            return res.json(roomUpdated);
+        }
+
+        return res.status(400).send(JSON.stringify({
+            message: "Cannot update room!",
+            success: false
+        }));
+
+    } catch (error) {
+        if (error.message.includes("Cast to ObjectId failed")) {
+            return res.status(404).send(JSON.stringify({
+                message: "Not Found Area",
                 success: false
             }))
         }
