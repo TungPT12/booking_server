@@ -247,6 +247,7 @@ exports.updateHotelById = async (req, res) => {
         hotel.featured = featured;
 
         const hotelUpdated = await hotel.save();
+        console.log(hotelUpdated)
         if (hotelUpdated) {
             return res.json();
         }
@@ -285,8 +286,6 @@ exports.deleteHotelById = async (req, res) => {
         const transactions = await Transaction.find({
             hotelId: id
         })
-
-        console.log(transactions)
 
         if (transactions.length > 0) {
             return res.status(400).send(JSON.stringify({

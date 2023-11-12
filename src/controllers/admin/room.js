@@ -1,5 +1,6 @@
 const Hotel = require('../../models/Hotel');
 const Room = require('../../models/Room');
+const Transaction = require('../../models/Transaction');
 const paging = require('../../utils/paging')
 
 const resultPerPage = 8;
@@ -69,6 +70,92 @@ exports.getRooms = async (req, res) => {
         }))
     } catch (error) {
         console.log(error);
+        return res.status(500).send(JSON.stringify({
+            message: "Server Error",
+            success: false
+        }))
+    }
+}
+
+exports.deleteRoomById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!id) {
+            return res.status(400).send(JSON.stringify({
+                message: "Not found id params!",
+                success: false
+            }));
+        }
+
+        const room = await Room.findById(id);
+        if (!room) {
+            return res.status(404).send(JSON.stringify({
+                message: "Not found room!",
+                success: false
+            }));
+        }
+
+        const hotelId = room.hotelID;
+        const roomNumbersInRoom = room.roomNumbers;
+
+        const transactions = await Transaction.find({
+            $or: [
+                {
+                    hotelId: hotelId,
+                    status: 'booked'
+                },
+                {
+                    hotelId: hotelId,
+                    status: 'checkin'
+                },
+            ]
+        })
+
+        let isDelete = true;
+
+        if (transactions.length > 0) {
+            for (let transactionPosition = 0; transactionPosition < transactions.length; transactionPosition++) {
+                const transaction = transactions[transactionPosition];
+                const roomNumbersWasBookedOrCheckin = transaction.rooms;
+                roomNumbersWasBookedOrCheckin.forEach((roomNumberWasBookedOrCheckin) => {
+                    if (roomNumbersInRoom.includes(roomNumberWasBookedOrCheckin)) {
+                        isDelete = false;
+                    }
+                })
+                if (!isDelete) {
+                    break;
+                }
+            }
+        }
+
+        if (!isDelete) {
+            return res.status(400).send(JSON.stringify({
+                message: "This room is booking or checkin cannot delete!",
+                success: false
+            }))
+        }
+
+        const deletedRoom = await Room.deleteOne({
+            _id: id
+        });
+
+        if (deletedRoom.deletedCount <= 0) {
+            return res.status(400).send(JSON.stringify({
+                message: "Something went wrong when delete room!",
+                success: false
+            }));
+        }
+
+        return res.sendStatus(200);
+
+    } catch (error) {
+        if (error.message.includes("Cast to ObjectId failed")) {
+            return res.status(404).send(JSON.stringify({
+                message: "Not Found Room",
+                success: false
+            }))
+        }
+        console.log(error.message);
         return res.status(500).send(JSON.stringify({
             message: "Server Error",
             success: false
