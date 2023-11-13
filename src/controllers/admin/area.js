@@ -29,14 +29,14 @@ exports.createArea = async (req, res) => {
 exports.getAreaById = async (req, res) => {
     try {
         let { id } = req.params;
-        const areas = await Area.findById(id)
-        if (!areas) {
+        const area = await Area.findById(id)
+        if (!area) {
             return res.status(404).json({
                 message: "Not found area!",
                 success: false,
             });
         }
-        return res.send(JSON.stringify(areas));
+        return res.send(JSON.stringify(area));
     } catch (error) {
         console.log(error)
         return res.status(500).send(JSON.stringify({

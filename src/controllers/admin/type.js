@@ -107,3 +107,64 @@ exports.deleteType = async (req, res) => {
         }))
     }
 }
+
+exports.getTypeById = async (req, res) => {
+    try {
+        let { id } = req.params;
+        const type = await Type.findById(id)
+        if (!type) {
+            return res.status(404).json({
+                message: "Not found type!",
+                success: false,
+            });
+        }
+        return res.send(JSON.stringify(type));
+    } catch (error) {
+        console.log(error)
+        return res.status(500).send(JSON.stringify({
+            message: "Server Error",
+            success: false
+        }))
+    }
+}
+
+exports.updateTypeById = async (req, res) => {
+    try {
+        const { id, name, image } = req.body;
+        const type = await Type.findById(id)
+        if (!type) {
+            return res.status(404).send(JSON.stringify({
+                message: "Not found type!",
+                success: false,
+            }))
+        }
+        if (name) {
+            type.name = name;
+        }
+        if (image) {
+            type.image = image;
+        }
+
+        const typeUpdate = await type.save();
+
+        if (typeUpdate) {
+            return res.json(typeUpdate);
+        }
+        return res.status(404).send(JSON.stringify({
+            message: "Cannot update type!",
+            success: false
+        }))
+    } catch (error) {
+        if (error.message.includes("Cast to ObjectId failed")) {
+            return res.status(404).send(JSON.stringify({
+                message: "Not Found area",
+                success: false
+            }))
+        }
+        console.log(error.message);
+        return res.status(500).send(JSON.stringify({
+            message: "Server Error",
+            success: false
+        }))
+    }
+}
