@@ -58,6 +58,7 @@ exports.searchHotels = async (req, res) => {
             return hotel.rooms.length > 0;
         })
 
+
         if (hotelsHaveRoom.length <= 0) {
             return res.json([])
         }
@@ -86,9 +87,6 @@ exports.searchHotels = async (req, res) => {
             ]
         })
 
-        if (transactions.length <= 0) {
-            return res.json([])
-        }
         const filterHotelHaveValidRoom = searchRoomByDate(resultList, transactions, startDate, endDate);
 
         const filterByMaxPeople = searchByPeople(people, filterHotelHaveValidRoom);

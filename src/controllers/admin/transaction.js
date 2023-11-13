@@ -94,4 +94,28 @@ exports.getNumberTransactions = async (req, res) => {
             success: false
         }))
     }
-}  
+}
+
+exports.getBalance = async (req, res) => {
+    try {
+        const transactions = await Transaction.find()
+        if (!transactions || transactions.length <= 0) {
+            return res.json({
+                balance: 0,
+            })
+        }
+
+        const balance = transactions.reduce((initBalance, transaction) => {
+            return initBalance + transaction.price
+        }, 0)
+        return res.json({
+            balance: balance
+        })
+    } catch (error) {
+        console.log(error.message);
+        return res.status(500).send(JSON.stringify({
+            message: "Server Error",
+            success: false
+        }))
+    }
+}

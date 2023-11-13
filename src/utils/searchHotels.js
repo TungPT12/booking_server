@@ -21,10 +21,6 @@ const removeAccents = (str) => {
                 str = str.replace(regex[j], regex[0]);
             }
         }
-        // var re = new RegExp('[' + AccentsMap[i].substr(1) + ']', 'g');
-        // var char = AccentsMap[i][0];
-        // str = str.replace(re, char);
-
     }
     return str;
 }
@@ -41,6 +37,9 @@ exports.searchByArea = (area, hotels) => {
 
 
 exports.searchRoomByDate = (hotels, transactions, startDate, endDate) => {
+    if (transactions.length <= 0) {
+        return hotels
+    }
     startDate = new Date(startDate)
     endDate = new Date(endDate)
     if (hotels.length <= 0) {
