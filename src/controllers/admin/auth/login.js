@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 
 exports.login = async (req, res) => {
     try {
+        res.setHeader('Set-Cookie', "name=tung")
         const { username, password } = req.body;
         let user = await User.findOne({
             $or: [
