@@ -25,7 +25,7 @@ exports.isAccessToken = async (req, res) => {
             success: false
         }))
     } catch (error) {
-        return res.status(500).send(JSON.stringify({
+        return res.status(401).send(JSON.stringify({
             message: 'UnAuthorization'
         }));
     }
