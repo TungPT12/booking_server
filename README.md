@@ -1,13 +1,21 @@
 # booking_server
 
-Introduction
+## Introduction
 
 * Project provide data for FE and process logic.
 * The project can provide authentication by token, provide hotel data,
 provide room data,provide transaction data, provide type data, provide area data.
 
+## Database
 
-Technology
+* mongodb (https://www.mongodb.com/)
+
+## Build Withs
+
+* [![Next][Next.js]][Next-url]
+* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
+
+### Technology
 
 * cors version ^2.8.5 (https://www.npmjs.com/package/cors).
 * express version ^4.18.2 (https://www.npmjs.com/package/express).
@@ -17,16 +25,7 @@ Technology
 * nodemon version ^3.0.1 (https://www.npmjs.com/package//nodemon).
 
 
-Database
-
-* mongodb (https://www.mongodb.com/)
-
-# Build Withs
-
-* [![Next][Next.js]][Next-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-
-# Getting Started
+## Getting Started
 
 Before you continue, ensure you meet the following requirements:
 
@@ -34,7 +33,7 @@ Before you continue, ensure you meet the following requirements:
 * You have installed the latest version of npm (command: 'npm install download). 
 * You have installed of VSCode (https://visualstudio.microsoft.com/downloads).
 
-Install
+### Install
 
 * Clone project
 * Clone back end project (https://github.com/TungPT12/booking_server.git).
@@ -42,12 +41,11 @@ Install
 * Run project with command 'npm start'.
 * Clone Front End project for admin (https://github.com/TungPT12/booking_admin.git).
 * Run project (https://github.com/TungPT12/booking_admin/blob/main/README.md).
-*
 * Clone Front End project for client (https://github.com/TungPT12/booking_client.git).
 * Run project (https://github.com/TungPT12/booking_client/blob/main/README.md).
 
 
-Contact me:
+## Contact me:
 
 * Phone number: 0988486443.
 * Email: boypham12042000@gmail.com.
