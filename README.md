@@ -96,6 +96,6 @@ Before you continue, ensure you meet the following requirements:
 [Bootstrap-url]: https://getbootstrap.com
 [JQuery.com]: https://img.shields.io/badge/jQuery-0769AD?style=for-the-badge&logo=jquery&logoColor=white
 [JQuery-url]: https://jquery.com 
-[Nodejs.com]: https://firebasestorage.googleapis.com/v0/b/authen-demo-tungpt.appspot.com/o/icons8-nodejs-48.png?alt=media&token=23c924d6-05d0-4377-a5e3-437a4a119e3e
+[Nodejs.com]: https://firebasestorage.googleapis.com/v0/b/authen-demo-tungpt.appspot.com/o/Screenshot%202023-11-24%20114607.png?alt=media&token=553e3109-b64a-4c42-bedb-3bef8aa42e85
 [NodeJS-url]: https://nodejs.org/en
 
